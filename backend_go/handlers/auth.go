@@ -32,7 +32,9 @@ func Register(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Database error"})
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	var userID string
 	err = tx.QueryRow(ctx, "INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id",
@@ -41,10 +43,11 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create user. Email might exist."})
 	}
 
-	if req.Role == "patient" {
+	switch req.Role {
+	case "patient":
 		_, err = tx.Exec(ctx, "INSERT INTO patients (user_id, full_name, icu_discharge_date) VALUES ($1, $2, $3)",
 			userID, req.FullName, req.ICUDischargeDate)
-	} else if req.Role == "health_worker" {
+	case "health_worker":
 		_, err = tx.Exec(ctx, "INSERT INTO health_workers (user_id, full_name, specialization) VALUES ($1, $2, $3)",
 			userID, req.FullName, req.Specialization)
 	}
@@ -92,9 +95,10 @@ func Login(c *fiber.Ctx) error {
 
 	// Also fetch specific profile ID for frontend convenience
 	var profileID string
-	if user.Role == "patient" {
+	switch user.Role {
+	case "patient":
 		_ = config.DB.QueryRow(context.Background(), "SELECT id FROM patients WHERE user_id = $1", user.ID).Scan(&profileID)
-	} else if user.Role == "health_worker" {
+	case "health_worker":
 		_ = config.DB.QueryRow(context.Background(), "SELECT id FROM health_workers WHERE user_id = $1", user.ID).Scan(&profileID)
 	}
 
