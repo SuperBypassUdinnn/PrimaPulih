@@ -1,15 +1,12 @@
 // Profile Screen — PrimaPulih
 // Referensi mockup: IMG_00010.jpeg
+// Layout: header SVG, "Profil Saya", avatar berhijab, badge Aktif, menu list putih+SVG icon
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/app_widgets.dart';
-import '../../../data/mock/mock_data_source.dart';
-import '../../../data/models/models.dart';
 import '../../auth/auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -19,192 +16,140 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final patient = auth.currentPatient;
-    final user = auth.currentUser;
-    final assessments = MockDataSource.getAssessmentsForPatient(patient?.id ?? '');
-    final latestPHQ9 = assessments.where((a) => a.type == AssessmentType.phq9).firstOrNull;
-    final latestGAD7 = assessments.where((a) => a.type == AssessmentType.gad7).firstOrNull;
+    final firstName = patient?.fullName.split(' ').first ?? 'Pasien';
+    final patientId = patient?.id ?? '#0001';
 
-    return GradientScaffold(
-      appBar: const AppHeader(
-        title: 'PrimaPulih',
-        showBackButton: true,
-        roleBadge: 'Pasien',
-      ),
-      body: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: const Color(0xFFD6E8F7),
+      body: SafeArea(
         child: Column(
           children: [
-            // ── Profile Header ─────────────────────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 24, vertical: 24),
-              decoration: const BoxDecoration(
-                gradient: AppColors.backgroundGradient,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Profil Saya', style: AppTextStyles.headingSmall),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      // Avatar
-                      Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.white, width: 3),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
+            // ── Header ────────────────────────────────────
+            _ProfileHeader(),
+
+            // ── Content ───────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Section title
+                    const Text(
+                      'Profil Saya',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // ── Avatar + info ────────────────────
+                    Row(
+                      children: [
+                        // Avatar circle dengan border biru
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFF5B8DB8),
+                              width: 3,
+                            ),
+                            color: const Color(0xFFE8F4FC),
+                          ),
+                          child: ClipOval(
+                            child: SvgPicture.string(
+                              _avatarSvg,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              firstName,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1A1A2E),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'ID Pasien: #${patientId.replaceAll('pat-', '00')}',
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13,
+                                color: Color(0xFF666666),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Aktif badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF7AACCC),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                'Aktif dalam perawatan',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.person_rounded,
-                            color: Colors.white, size: 36),
-                      ),
-                      const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            patient?.fullName ?? 'Pengguna',
-                            style: AppTextStyles.headingMedium,
-                          ),
-                          Text(
-                            user?.email ?? '',
-                            style: AppTextStyles.bodySmall,
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                  color: AppColors.primary.withValues(alpha: 0.3)),
-                            ),
-                            child: Text(
-                              'Aktif dalam perawatan',
-                              style: AppTextStyles.labelSmall.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Assessment Summary ─────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _ScoreSummaryCard(
-                      label: 'PHQ-9',
-                      subtitle: 'Depresi',
-                      score: latestPHQ9?.totalScore,
-                      maxScore: 27,
-                      interpretation: latestPHQ9?.phq9Interpretation,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ScoreSummaryCard(
-                      label: 'GAD-7',
-                      subtitle: 'Kecemasan',
-                      score: latestGAD7?.totalScore,
-                      maxScore: 21,
-                      interpretation: latestGAD7?.gad7Interpretation,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Menu List ─────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 8),
-              child: Column(
-                children: [
-                  _ProfileMenuItem(
-                    icon: Icons.person_outline_rounded,
-                    label: 'Data Pribadi',
-                    subtitle: patient?.fullName ?? '-',
-                    onTap: () {},
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.description_outlined,
-                    label: 'Riwayat Klinis',
-                    subtitle: patient?.icuDischargeDate != null
-                        ? 'Keluar ICU: ${DateFormat('d MMM yyyy', 'id').format(patient!.icuDischargeDate)}'
-                        : '-',
-                    onTap: () {},
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.badge_outlined,
-                    label: 'Perawat',
-                    subtitle: 'Dr. Sarah Azizah, Sp.Kj',
-                    onTap: () {},
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.assignment_outlined,
-                    label: 'Riwayat Asesmen',
-                    subtitle: '${assessments.length} asesmen tersimpan',
-                    onTap: () {},
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.settings_outlined,
-                    label: 'Pengaturan Akun',
-                    subtitle: user?.email ?? '',
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 8),
-                  AppCard(
-                    onTap: () async {
-                      final confirm = await _showLogoutDialog(context);
-                      if (confirm == true && context.mounted) {
-                        await context.read<AuthProvider>().logout();
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: AppColors.errorLight,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(Icons.logout_rounded,
-                              color: AppColors.error, size: 20),
-                        ),
-                        const SizedBox(width: 14),
-                        Text(
-                          'Keluar / Log Out',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.error,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
+                    const SizedBox(height: 28),
+
+                    // ── Menu Items ───────────────────────
+                    _MenuItem(
+                      svgContent: _personSvg,
+                      label: 'Data Pribadi',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+                    _MenuItem(
+                      svgContent: _documentSvg,
+                      label: 'Riwayat Klinis',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+                    _MenuItem(
+                      svgContent: _badgeSvg,
+                      label: 'Perawat',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+                    _MenuItem(
+                      svgContent: _settingsSvg,
+                      label: 'Pengaturan Akun',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Logout — merah
+                    _MenuItem(
+                      svgContent: _logoutSvg,
+                      label: 'Keluar / Log Out',
+                      onTap: () => _showLogoutDialog(context, auth),
+                      isDestructive: true,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -213,27 +158,42 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<bool?> _showLogoutDialog(BuildContext context) {
-    return showDialog<bool>(
+  void _showLogoutDialog(BuildContext context, AuthProvider auth) {
+    showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Keluar', style: AppTextStyles.headingSmall),
-        content: Text(
-          'Apakah kamu yakin ingin keluar dari akun ini?',
-          style: AppTextStyles.bodyMedium,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Keluar dari Akun?',
+          style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w700),
+        ),
+        content: const Text(
+          'Kamu akan keluar dari sesi saat ini.',
+          style: TextStyle(fontFamily: 'Poppins'),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal'),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(
+              'Batal',
+              style: TextStyle(fontFamily: 'Poppins', color: Color(0xFF888888)),
+            ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await auth.logout();
+            },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Keluar'),
+            child: const Text(
+              'Keluar',
+              style: TextStyle(
+                  fontFamily: 'Poppins', color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -241,98 +201,197 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ScoreSummaryCard extends StatelessWidget {
-  const _ScoreSummaryCard({
-    required this.label,
-    required this.subtitle,
-    this.score,
-    required this.maxScore,
-    this.interpretation,
-  });
-  final String label;
-  final String subtitle;
-  final int? score;
-  final int maxScore;
-  final String? interpretation;
+// ─────────────────────────────────────────────
+// Header
+// ─────────────────────────────────────────────
 
+class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.primary,
-              )),
-          Text(subtitle, style: AppTextStyles.caption),
-          const SizedBox(height: 8),
-          Text(
-            score != null ? '$score/$maxScore' : 'Belum diisi',
-            style: AppTextStyles.headingMedium,
-          ),
-          if (interpretation != null)
-            Text(
-              interpretation!,
-              style: AppTextStyles.caption
-                  .copyWith(color: AppColors.textSecondary),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileMenuItem extends StatelessWidget {
-  const _ProfileMenuItem({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.onTap,
-  });
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: const Icon(Icons.menu_rounded,
+                size: 28, color: Color(0xFF1A1A2E)),
+          ),
+          const SizedBox(width: 10),
+          SvgPicture.asset('assets/svg/logo_primapulih.svg',
+              width: 40, height: 40),
+          const SizedBox(width: 8),
+          const Text(
+            'PrimaPulih',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1A1A2E),
+            ),
+          ),
+          const SizedBox(width: 8),
           Container(
-            width: 42,
-            height: 42,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.bgLight,
-              borderRadius: BorderRadius.circular(10),
+              border:
+                  Border.all(color: const Color(0xFF2563EB), width: 1.5),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child:
-                Icon(icon, color: AppColors.primary, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: AppTextStyles.bodyMedium
-                    .copyWith(fontWeight: FontWeight.w600)),
-                Text(subtitle,
-                    style: AppTextStyles.bodySmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-              ],
+            child: const Text(
+              'Pasien',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2563EB),
+              ),
             ),
           ),
-          const Icon(Icons.chevron_right_rounded,
-              color: AppColors.textHint, size: 20),
+          const Spacer(),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: const Color(0xFFD6E8F7),
+            child: const Icon(
+              Icons.person_rounded,
+              color: Color(0xFF7AACCC),
+              size: 24,
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+// ─────────────────────────────────────────────
+// Menu Item Card — persis mockup
+// ─────────────────────────────────────────────
+
+class _MenuItem extends StatelessWidget {
+  const _MenuItem({
+    required this.svgContent,
+    required this.label,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+  final String svgContent;
+  final String label;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        isDestructive ? const Color(0xFFE05050) : const Color(0xFF5B8DB8);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SvgPicture.string(
+              svgContent,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: isDestructive
+                      ? const Color(0xFFE05050)
+                      : const Color(0xFF1A1A2E),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// SVG strings
+// ─────────────────────────────────────────────
+
+const String _avatarSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="40" fill="#E0F0F8"/>
+  <!-- Body -->
+  <ellipse cx="40" cy="72" rx="26" ry="18" fill="#4A8A9A"/>
+  <!-- Head -->
+  <circle cx="40" cy="34" r="16" fill="#FBBF7A"/>
+  <!-- Hijab -->
+  <ellipse cx="40" cy="28" rx="18" ry="11" fill="#3A7A8A"/>
+  <path d="M23 32 Q18 50 26 64 Q40 70 54 64 Q62 50 57 32" fill="#3A7A8A"/>
+  <!-- Glasses -->
+  <rect x="28" y="34" width="10" height="7" rx="3.5" fill="none" stroke="#555" stroke-width="1.5"/>
+  <rect x="42" y="34" width="10" height="7" rx="3.5" fill="none" stroke="#555" stroke-width="1.5"/>
+  <line x1="38" y1="37" x2="42" y2="37" stroke="#555" stroke-width="1.5"/>
+  <!-- Eyes -->
+  <circle cx="33" cy="37" r="2" fill="#333"/>
+  <circle cx="47" cy="37" r="2" fill="#333"/>
+  <!-- Smile -->
+  <path d="M35 44 Q40 49 45 44" stroke="#E05050" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>
+''';
+
+const String _personSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+  <circle cx="12" cy="7" r="4"/>
+</svg>
+''';
+
+const String _documentSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="16" y1="13" x2="8" y2="13"/>
+  <line x1="16" y1="17" x2="8" y2="17"/>
+  <polyline points="10 9 9 9 8 9"/>
+</svg>
+''';
+
+const String _badgeSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="2" y="7" width="20" height="14" rx="2"/>
+  <path d="M16 3H8l-2 4h12z"/>
+  <circle cx="12" cy="14" r="2"/>
+</svg>
+''';
+
+const String _settingsSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="3"/>
+  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+</svg>
+''';
+
+const String _logoutSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+  <polyline points="16 17 21 12 16 7"/>
+  <line x1="21" y1="12" x2="9" y2="12"/>
+</svg>
+''';
