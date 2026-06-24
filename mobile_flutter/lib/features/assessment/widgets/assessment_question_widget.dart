@@ -1,9 +1,8 @@
-// Assessment Question Widget — Reusable component
-// Referensi mockup: IMG_00009.jpeg (toggle button 0-1-2-3)
+// Assessment Question Widget — PrimaPulih
+// Referensi: mockup IMG_00009
+// Layout: nomor + teks bold, lalu selector row abu-biru dengan 0/1/2/3
 
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/models.dart';
 
 class AssessmentQuestionWidget extends StatelessWidget {
@@ -20,39 +19,29 @@ class AssessmentQuestionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Question text
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '${question.number}. ',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: question.text,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+          // Question text — bold, persis mockup
+          Text(
+            '${question.number}. ${question.text}',
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1A1A2E),
+              height: 1.4,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
-          // Score Selector (0-1-2-3)
+          // Score Row — satu strip abu-biru dengan 4 pilihan
           Container(
+            height: 52,
             decoration: BoxDecoration(
-              color: selectedScore != null
-                  ? AppColors.bgLight
-                  : AppColors.surfaceVariant,
+              color: const Color(0xFFD6E8F7),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
@@ -65,30 +54,32 @@ class AssessmentQuestionWidget extends StatelessWidget {
                       duration: const Duration(milliseconds: 180),
                       curve: Curves.easeInOut,
                       margin: const EdgeInsets.all(4),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.white : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.15),
-                                  blurRadius: 8,
+                                  color: Colors.black.withValues(alpha: 0.12),
+                                  blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
                               ]
                             : null,
                       ),
-                      child: Text(
-                        '$i',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.headingSmall.copyWith(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textHint,
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w400,
+                      child: Center(
+                        child: Text(
+                          '$i',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color: isSelected
+                                ? const Color(0xFF1A1A2E)
+                                : const Color(0xFF888888),
+                          ),
                         ),
                       ),
                     ),

@@ -155,16 +155,16 @@ extension MoodTypeExtension on MoodType {
     }
   }
 
-  String get emoji {
+  String get svgPath {
     switch (this) {
-      case MoodType.senang:   return '😊';
-      case MoodType.marah:    return '😠';
-      case MoodType.sedih:    return '😢';
-      case MoodType.bingung:  return '😕';
-      case MoodType.stress:   return '😩';
-      case MoodType.ngantuk:  return '😴';
-      case MoodType.capek:    return '😓';
-      case MoodType.semangat: return '💪';
+      case MoodType.senang:   return 'assets/svg/mood_senang.svg';
+      case MoodType.marah:    return 'assets/svg/mood_marah.svg';
+      case MoodType.sedih:    return 'assets/svg/mood_sedih.svg';
+      case MoodType.bingung:  return 'assets/svg/mood_bingung.svg';
+      case MoodType.stress:   return 'assets/svg/mood_stress.svg';
+      case MoodType.ngantuk:  return 'assets/svg/mood_ngantuk.svg';
+      case MoodType.capek:    return 'assets/svg/mood_capek.svg';
+      case MoodType.semangat: return 'assets/svg/mood_semangat.svg';
     }
   }
 }
@@ -194,11 +194,11 @@ extension MedTimeExtension on MedTime {
     }
   }
 
-  String get icon {
+  String get svgPath {
     switch (this) {
-      case MedTime.pagi:  return '🌅';
-      case MedTime.siang: return '☀️';
-      case MedTime.malam: return '🌙';
+      case MedTime.pagi:  return 'assets/svg/ic_sunrise.svg';
+      case MedTime.siang: return 'assets/svg/ic_sun.svg';
+      case MedTime.malam: return 'assets/svg/ic_moon.svg';
     }
   }
 }

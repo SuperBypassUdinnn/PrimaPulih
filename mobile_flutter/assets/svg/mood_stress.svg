@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Body / shirt -->
+  <rect x="28" y="112" width="64" height="28" rx="14" fill="#7BBFEA"/>
+  <!-- Neck -->
+  <rect x="50" y="96" width="20" height="18" rx="6" fill="#FBBF7A"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="72" rx="36" ry="38" fill="#FBBF7A"/>
+  <!-- Hair disheveled -->
+  <ellipse cx="60" cy="42" rx="36" ry="16" fill="#7D4E2A"/>
+  <ellipse cx="30" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <ellipse cx="90" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <!-- Stress spirals -->
+  <path d="M22 38 Q28 32 26 40 Q24 48 30 44" stroke="#888" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M98 38 Q92 32 94 40 Q96 48 90 44" stroke="#888" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- Both hands on head -->
+  <ellipse cx="24" cy="66" rx="12" ry="8" fill="#FBBF7A"/>
+  <ellipse cx="96" cy="66" rx="12" ry="8" fill="#FBBF7A"/>
+  <!-- Stressed eyes (lines/squint) -->
+  <ellipse cx="46" cy="68" rx="6" ry="5" fill="white"/>
+  <ellipse cx="74" cy="68" rx="6" ry="5" fill="white"/>
+  <circle cx="46" cy="69" r="3" fill="#3A2410"/>
+  <circle cx="74" cy="69" r="3" fill="#3A2410"/>
+  <!-- Stress eyebrows (arched down) -->
+  <path d="M38 61 Q46 64 54 61" stroke="#7D4E2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M66 61 Q74 64 82 61" stroke="#7D4E2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Open stressed mouth -->
+  <ellipse cx="60" cy="86" rx="10" ry="7" fill="#C05050"/>
+  <ellipse cx="60" cy="84" rx="10" ry="5" fill="#E87070"/>
+  <!-- Cheeks flushed -->
+  <ellipse cx="38" cy="76" rx="9" ry="6" fill="#F08080" opacity="0.5"/>
+  <ellipse cx="82" cy="76" rx="9" ry="6" fill="#F08080" opacity="0.5"/>
+</svg>
