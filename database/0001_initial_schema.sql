@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- ==========================================
 -- 1. MANAJEMEN PENGGUNA SENTRAL
 -- ==========================================
