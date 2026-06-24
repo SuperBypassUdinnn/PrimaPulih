@@ -1,12 +1,11 @@
 // Register Success Screen — PrimaPulih
 // Referensi mockup: IMG_00003.jpeg
+// Layout: background biru muda, ilustrasi SVG besar, teks konfirmasi, tombol Ok
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/app_widgets.dart';
 import '../../../core/router/app_router.dart';
 
 class RegisterSuccessScreen extends StatefulWidget {
@@ -27,10 +26,16 @@ class _RegisterSuccessScreenState extends State<RegisterSuccessScreen>
     super.initState();
     _animCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 700),
     );
-    _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.elasticOut);
-    _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _scaleAnim = CurvedAnimation(
+      parent: _animCtrl,
+      curve: Curves.elasticOut,
+    );
+    _fadeAnim = CurvedAnimation(
+      parent: _animCtrl,
+      curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
+    );
     _animCtrl.forward();
   }
 
@@ -43,163 +48,137 @@ class _RegisterSuccessScreenState extends State<RegisterSuccessScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                // Back button
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: GestureDetector(
-                    onTap: () => context.go(AppRoutes.login),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(color: AppColors.shadow, blurRadius: 8),
-                        ],
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 18, color: AppColors.textPrimary),
-                    ),
-                  ),
-                ),
-
-                const Spacer(),
-
-                // Illustration
-                ScaleTransition(
-                  scale: _scaleAnim,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Decorative circles
-                        Positioned(
-                          top: 20,
-                          right: 20,
-                          child: _DecoCircle(
-                            size: 40,
-                            color: AppColors.warning.withValues(alpha: 0.7),
-                            icon: Icons.lock_outlined,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 30,
-                          left: 20,
-                          child: _DecoCircle(
-                            size: 36,
-                            color: AppColors.success.withValues(alpha: 0.8),
-                            icon: Icons.verified_outlined,
-                          ),
-                        ),
-                        // Main icon
-                        Container(
-                          width: 110,
-                          height: 110,
-                          decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.check_circle_outline_rounded,
-                            color: Colors.white,
-                            size: 56,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Success Text
-                FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Pendaftaran akun berhasil',
-                        style: AppTextStyles.headingLarge.copyWith(
-                          color: AppColors.primary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Pendaftaranmu berhasil. Silakan login menggunakan akun yang baru saja dibuat untuk mulai memantau kesehatanmu.',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                          height: 1.6,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                // CTA Button
-                AppButton(
-                  label: 'Masuk Sekarang',
-                  onPressed: () => context.go(AppRoutes.login),
-                  icon: Icons.login_rounded,
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
+      backgroundColor: const Color(0xFFD6E8F7),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Back arrow
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
                   onTap: () => context.go(AppRoutes.login),
-                  child: Text(
-                    'Kembali ke halaman login',
-                    style: AppTextStyles.link,
+                  child: const Icon(
+                    Icons.chevron_left_rounded,
+                    color: Color(0xFF1A1A2E),
+                    size: 32,
                   ),
                 ),
-                const SizedBox(height: 24),
-              ],
+              ),
             ),
-          ),
+
+            const Spacer(),
+
+            // Illustration SVG
+            ScaleTransition(
+              scale: _scaleAnim,
+              child: SvgPicture.asset(
+                'assets/svg/illus_success.svg',
+                width: MediaQuery.of(context).size.width * 0.75,
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Title
+            FadeTransition(
+              opacity: _fadeAnim,
+              child: const Text(
+                'Pendaftaran akun berhasil',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2563EB),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Description
+            FadeTransition(
+              opacity: _fadeAnim,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: const Text(
+                  'Pendaftaranmu berhasil. Kami telah mengirimkan tautan verifikasi ke emailmu untuk memastikan akunmu aman. Silakan cek kotak masuk (atau folder spam) untuk melanjutkan',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: Color(0xFF333333),
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            const Spacer(),
+
+            // Ok Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => context.go(AppRoutes.login),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Resend
+            RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  color: Color(0xFF888888),
+                ),
+                children: [
+                  const TextSpan(text: 'Pesan belum terkirim? '),
+                  WidgetSpan(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: const Text(
+                        'resend verification',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                          color: Color(0xFF2563EB),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class _DecoCircle extends StatelessWidget {
-  const _DecoCircle({
-    required this.size,
-    required this.color,
-    required this.icon,
-  });
-  final double size;
-  final Color color;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: Icon(icon, color: Colors.white, size: size * 0.5),
     );
   }
 }
