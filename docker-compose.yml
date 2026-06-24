@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -10,9 +8,9 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: primapulih
     ports:
-      - "5432:5432"
+      - "5435:5435"
     volumes:
-      - ./supabase/migrations/0001_initial_schema.sql:/docker-entrypoint-initdb.d/0001_initial_schema.sql
+      - ./database/0001_initial_schema.sql:/docker-entrypoint-initdb.d/0001_initial_schema.sql
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
