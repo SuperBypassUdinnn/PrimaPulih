@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Body / shirt -->
+  <rect x="28" y="112" width="64" height="28" rx="14" fill="#7BBFEA"/>
+  <!-- Neck -->
+  <rect x="50" y="96" width="20" height="18" rx="6" fill="#FBBF7A"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="72" rx="36" ry="38" fill="#FBBF7A"/>
+  <!-- Hair -->
+  <ellipse cx="60" cy="42" rx="36" ry="16" fill="#7D4E2A"/>
+  <ellipse cx="30" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <ellipse cx="90" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <!-- Sad eyes (droopy) -->
+  <ellipse cx="46" cy="70" rx="6" ry="5.5" fill="white"/>
+  <ellipse cx="74" cy="70" rx="6" ry="5.5" fill="white"/>
+  <circle cx="46" cy="71" r="3.2" fill="#3A2410"/>
+  <circle cx="74" cy="71" r="3.2" fill="#3A2410"/>
+  <circle cx="47.2" cy="69.5" r="1.1" fill="white"/>
+  <circle cx="75.2" cy="69.5" r="1.1" fill="white"/>
+  <!-- Sad eyebrows (raised inner corners) -->
+  <path d="M40 62 Q46 58 52 63" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M68 63 Q74 58 80 62" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Frown -->
+  <path d="M44 86 Q60 76 76 86" stroke="#B03030" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Tear drop left -->
+  <ellipse cx="38" cy="80" rx="3.5" ry="5" fill="#6DB8E8"/>
+  <path d="M36 76 Q38 72 40 76" fill="#6DB8E8"/>
+  <!-- Cheek blush -->
+  <ellipse cx="38" cy="78" rx="8" ry="5" fill="#F08080" opacity="0.3"/>
+  <ellipse cx="82" cy="78" rx="8" ry="5" fill="#F08080" opacity="0.3"/>
+</svg>

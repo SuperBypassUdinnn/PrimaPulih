@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Body / shirt -->
+  <rect x="28" y="112" width="64" height="28" rx="14" fill="#7BBFEA"/>
+  <!-- Neck -->
+  <rect x="50" y="96" width="20" height="18" rx="6" fill="#FBBF7A"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="72" rx="36" ry="38" fill="#FBBF7A"/>
+  <!-- Hair -->
+  <ellipse cx="60" cy="42" rx="36" ry="16" fill="#7D4E2A"/>
+  <ellipse cx="30" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <ellipse cx="90" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <!-- Anger veins -->
+  <path d="M24 44 L18 38 L24 42 L20 36" stroke="#E05050" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M96 44 L102 38 L96 42 L100 36" stroke="#E05050" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Red flushed cheeks -->
+  <ellipse cx="38" cy="74" rx="10" ry="7" fill="#E05050" opacity="0.4"/>
+  <ellipse cx="82" cy="74" rx="10" ry="7" fill="#E05050" opacity="0.4"/>
+  <!-- Eyes angry (squinted) -->
+  <ellipse cx="46" cy="68" rx="7" ry="5" fill="white"/>
+  <ellipse cx="74" cy="68" rx="7" ry="5" fill="white"/>
+  <circle cx="46" cy="69" r="3.5" fill="#3A2410"/>
+  <circle cx="74" cy="69" r="3.5" fill="#3A2410"/>
+  <!-- Angry eyebrows (diagonal down inward) -->
+  <path d="M38 60 L52 65" stroke="#7D4E2A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M82 60 L68 65" stroke="#7D4E2A" stroke-width="3" stroke-linecap="round"/>
+  <!-- Frown -->
+  <path d="M44 87 Q60 78 76 87" stroke="#B03030" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Clenched teeth -->
+  <path d="M46 84 Q60 80 74 84 L74 88 Q60 84 46 88 Z" fill="white"/>
+  <line x1="54" y1="84" x2="54" y2="88" stroke="#CCC" stroke-width="1"/>
+  <line x1="60" y1="84" x2="60" y2="88" stroke="#CCC" stroke-width="1"/>
+  <line x1="66" y1="84" x2="66" y2="88" stroke="#CCC" stroke-width="1"/>
+</svg>
