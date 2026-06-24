@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Body / shirt -->
+  <rect x="28" y="112" width="64" height="28" rx="14" fill="#7BBFEA"/>
+  <!-- Neck -->
+  <rect x="50" y="96" width="20" height="18" rx="6" fill="#FBBF7A"/>
+  <!-- Head tilted (drooping) -->
+  <ellipse cx="60" cy="74" rx="36" ry="38" fill="#FBBF7A"/>
+  <!-- Hair -->
+  <ellipse cx="60" cy="44" rx="36" ry="16" fill="#7D4E2A"/>
+  <ellipse cx="30" cy="54" rx="10" ry="12" fill="#7D4E2A"/>
+  <ellipse cx="90" cy="54" rx="10" ry="12" fill="#7D4E2A"/>
+  <!-- Zzz -->
+  <text x="84" y="44" font-size="10" fill="#7799BB" font-family="sans-serif" font-weight="bold">z</text>
+  <text x="92" y="36" font-size="13" fill="#7799BB" font-family="sans-serif" font-weight="bold">z</text>
+  <text x="102" y="26" font-size="16" fill="#7799BB" font-family="sans-serif" font-weight="bold">Z</text>
+  <!-- Sleepy half-closed eyes -->
+  <ellipse cx="46" cy="70" rx="6" ry="4" fill="white"/>
+  <ellipse cx="74" cy="70" rx="6" ry="4" fill="white"/>
+  <!-- Upper eyelid covering half -->
+  <path d="M40 69 Q46 65 52 69" fill="#FBBF7A" stroke="#FBBF7A"/>
+  <path d="M68 69 Q74 65 80 69" fill="#FBBF7A" stroke="#FBBF7A"/>
+  <circle cx="46" cy="70" r="2.8" fill="#3A2410"/>
+  <circle cx="74" cy="70" r="2.8" fill="#3A2410"/>
+  <!-- Droopy eyebrows -->
+  <path d="M40 63 Q46 61 52 63" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M68 63 Q74 61 80 63" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Yawning hand over mouth -->
+  <ellipse cx="60" cy="88" rx="14" ry="8" fill="#FBBF7A"/>
+  <!-- Sleepy mouth (small open) -->
+  <ellipse cx="60" cy="88" rx="8" ry="5" fill="#C07050"/>
+</svg>

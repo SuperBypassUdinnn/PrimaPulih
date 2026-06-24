@@ -2,12 +2,10 @@
 // Referensi mockup: IMG_00009.jpeg
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/app_widgets.dart';
 import '../../../core/router/app_router.dart';
 import '../../../data/models/models.dart';
 import '../../../data/mock/mock_data_source.dart';
@@ -24,15 +22,12 @@ class AssessmentScreen extends StatefulWidget {
 }
 
 class _AssessmentScreenState extends State<AssessmentScreen> {
-  final ScrollController _scrollController = ScrollController();
-
   List<AssessmentQuestion> get _questions => widget.type == AssessmentType.phq9
       ? MockDataSource.phq9Questions
       : MockDataSource.gad7Questions;
 
   String get _title =>
       widget.type == AssessmentType.phq9 ? 'PHQ-9' : 'GAD-7';
-
 
   @override
   void initState() {
@@ -42,187 +37,213 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
   Future<void> _handleSubmit() async {
-    final assessmentProv = context.read<AssessmentProvider>();
-    if (!assessmentProv.isComplete) {
+    final prov = context.read<AssessmentProvider>();
+    if (!prov.isComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Harap jawab semua pertanyaan terlebih dahulu.'),
-          backgroundColor: AppColors.warning,
+          backgroundColor: Colors.orange,
         ),
       );
       return;
     }
-
     final auth = context.read<AuthProvider>();
-    final patientId = auth.currentPatient?.id ?? 'pat-001';
-
-    await assessmentProv.submitAssessment(
-      patientId: patientId,
+    await prov.submitAssessment(
+      patientId: auth.currentPatient?.id ?? 'pat-001',
       type: widget.type,
     );
-
     if (!mounted) return;
     context.push(AppRoutes.assessmentResult);
   }
 
   @override
   Widget build(BuildContext context) {
-    final assessmentProv = context.watch<AssessmentProvider>();
+    final prov = context.watch<AssessmentProvider>();
 
-    return GradientScaffold(
-      appBar: AppHeader(
-        title: _title,
-        showLogo: false,
-        showBackButton: true,
-      ),
-      body: Column(
-        children: [
-          // ── Gradient Header Strip ─────────────────────────
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: AppColors.headerGradient,
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            child: Text(
-              'Tes PHQ-9 dan GAD-7',
-              style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
+    return Scaffold(
+      backgroundColor: const Color(0xFFD6E8F7),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Header ──────────────────────────────────
+            _AssessmentHeader(),
+
+            // ── Gradient Title Strip ─────────────────────
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF4FC3F7), Color(0xFF80DEEA)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
               ),
-              textAlign: TextAlign.center,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: const Text(
+                'Tes PHQ-9 dan GAD-10',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2563EB),
+                ),
+              ),
             ),
-          ),
 
-          // ── Progress indicator ────────────────────────────
-          _ProgressBar(
-            answered: assessmentProv.answers.length,
-            total: _questions.length,
-          ),
-
-          // ── Questions List ────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header Card
-                  AppCard(
-                    color: AppColors.bgLight,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(_title,
-                            style: AppTextStyles.headingLarge.copyWith(
-                              color: AppColors.primary,
-                            )),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.type == AssessmentType.phq9
-                              ? 'Petunjuk: Dalam 2 minggu terakhir, seberapa sering Anda mengalami hal-hal berikut?'
-                              : 'Petunjuk: Selama 2 minggu terakhir, seberapa sering Anda terganggu oleh hal-hal berikut?',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Skor: 0 = tidak sama sekali, 1 = beberapa hari, '
-                          '2 = lebih dari setengah hari, 3 = hampir setiap hari',
-                          style: AppTextStyles.bodySmall,
-                        ),
-                      ],
+            // ── Question List ─────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title & Instructions
+                    Text(
+                      _title,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A2E),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.type == AssessmentType.phq9
+                          ? 'Petunjuk: Dalam 2 minggu terakhir, seberapa sering Anda mengalami hal-hal berikut?'
+                          : 'Petunjuk: Selama 2 minggu terakhir, seberapa sering Anda terganggu oleh hal-hal berikut?',
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: Color(0xFF555555),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Skor: 0 = tidak sama sekali, 1 = beberapa hari, 2 = lebih dari setengah hari, 3 = hampir setiap hari',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: Color(0xFF777777),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Question Items
-                  ...List.generate(_questions.length, (index) {
-                    final q = _questions[index];
-                    return AssessmentQuestionWidget(
-                      question: q,
-                      selectedScore: assessmentProv.getAnswer(index),
-                      onScoreSelected: (score) =>
-                          assessmentProv.setAnswer(index, score),
-                    );
-                  }),
+                    // Questions
+                    ...List.generate(_questions.length, (i) {
+                      return AssessmentQuestionWidget(
+                        question: _questions[i],
+                        selectedScore: prov.getAnswer(i),
+                        onScoreSelected: (score) => prov.setAnswer(i, score),
+                      );
+                    }),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  // Submit button
-                  AppButton(
-                    label: assessmentProv.isSubmitting
-                        ? 'Menyimpan...'
-                        : 'Kirim Hasil',
-                    isLoading: assessmentProv.isSubmitting,
-                    onPressed: _handleSubmit,
-                    icon: Icons.send_rounded,
-                    color: assessmentProv.isComplete
-                        ? AppColors.primary
-                        : AppColors.textHint,
-                  ),
-
-                  const SizedBox(height: 32),
-                ],
+                    // Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: prov.isSubmitting ? null : _handleSubmit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: prov.isComplete
+                              ? const Color(0xFF2563EB)
+                              : const Color(0xFFB0C4D8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: prov.isSubmitting
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Kirim Hasil',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────
-// Progress Bar Widget
+// Header
 // ─────────────────────────────────────────────
 
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({required this.answered, required this.total});
-  final int answered;
-  final int total;
-
+class _AssessmentHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final progress = total > 0 ? answered / total : 0.0;
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Progres: $answered / $total pertanyaan',
-                style: AppTextStyles.labelSmall,
-              ),
-              Text(
-                '${(progress * 100).round()}%',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: const Icon(Icons.menu_rounded, size: 28, color: Color(0xFF1A1A2E)),
           ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: AppColors.border,
-              color: AppColors.primary,
+          const SizedBox(width: 10),
+          SvgPicture.asset('assets/svg/logo_primapulih.svg', width: 40, height: 40),
+          const SizedBox(width: 8),
+          const Text(
+            'PrimaPulih',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1A1A2E),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              'Pasien',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2563EB),
+              ),
+            ),
+          ),
+          const Spacer(),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: const Color(0xFFD6E8F7),
+            child: const Icon(
+              Icons.person_rounded,
+              color: Color(0xFF7AACCC),
+              size: 24,
             ),
           ),
         ],

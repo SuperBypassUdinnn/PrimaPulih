@@ -1,14 +1,13 @@
 // Mood Tracker Screen — PrimaPulih
 // Referensi mockup: IMG_00007.jpeg
+// Layout: header sama seperti home, kartu putih besar dengan grid 3x3 mood + tombol Catat
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/app_widgets.dart';
-import '../../../core/router/app_router.dart';
 import '../../../data/models/models.dart';
 import '../../auth/auth_provider.dart';
 import '../../home/home_provider.dart';
@@ -16,165 +15,225 @@ import '../../home/home_provider.dart';
 class MoodTrackerScreen extends StatelessWidget {
   const MoodTrackerScreen({super.key});
 
-  static const List<MoodType> _moods = MoodType.values;
 
   @override
   Widget build(BuildContext context) {
     final moodProv = context.watch<MoodProvider>();
     final auth = context.watch<AuthProvider>();
     final patientId = auth.currentPatient?.id ?? 'pat-001';
-    final todayLog = moodProv.todayLog;
 
-    return GradientScaffold(
-      appBar: AppHeader(
-        title: 'PrimaPulih',
-        roleBadge: 'Pasien',
-        onAvatarTap: () => context.push(AppRoutes.profile),
-        showBackButton: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+    return Scaffold(
+      backgroundColor: const Color(0xFFD6E8F7),
+      body: SafeArea(
         child: Column(
           children: [
-            // Already logged today banner
-            if (todayLog != null)
-              AppCard(
-                color: AppColors.successLight,
-                child: Row(
-                  children: [
-                    Text(todayLog.mood.emoji,
-                        style: const TextStyle(fontSize: 32)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            // ── Header (sama persis dengan home) ──────────
+            _MoodHeader(),
+
+            // ── Content ──────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F5FF),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+                  child: Column(
+                    children: [
+                      // ── Mood Grid ────────────────────────
+                      // Baris 1: Senang, Marah, Sedih
+                      _MoodRow(
+                        moods: [MoodType.senang, MoodType.marah, MoodType.sedih],
+                        selected: moodProv.selectedMood,
+                        onSelect: moodProv.selectMood,
+                      ),
+                      const SizedBox(height: 8),
+                      // Baris 2: Bingung, Stress, Ngantuk
+                      _MoodRow(
+                        moods: [MoodType.bingung, MoodType.stress, MoodType.ngantuk],
+                        selected: moodProv.selectedMood,
+                        onSelect: moodProv.selectMood,
+                      ),
+                      const SizedBox(height: 8),
+                      // Baris 3: Capek, Semangat (centered)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Suasana hati hari ini: ${todayLog.mood.label}',
-                            style: AppTextStyles.headingSmall.copyWith(
-                              color: AppColors.success,
-                            ),
+                          _MoodTile(
+                            mood: MoodType.capek,
+                            isSelected: moodProv.selectedMood == MoodType.capek,
+                            onTap: () => moodProv.selectMood(MoodType.capek),
                           ),
-                          Text(
-                            'Sudah tercatat. Kamu bisa memperbarui pilihan di bawah.',
-                            style: AppTextStyles.bodySmall,
+                          const SizedBox(width: 8),
+                          _MoodTile(
+                            mood: MoodType.semangat,
+                            isSelected: moodProv.selectedMood == MoodType.semangat,
+                            onTap: () => moodProv.selectMood(MoodType.semangat),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-            const SizedBox(height: 8),
+                      const SizedBox(height: 28),
 
-            // Mood Grid Card
-            AppCard(
-              child: Column(
-                children: [
-                  Text(
-                    'Bagaimana perasaanmu hari ini?',
-                    style: AppTextStyles.headingSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Pilih salah satu yang paling menggambarkan kondisimu',
-                    style: AppTextStyles.bodySmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Mood Grid
-                  GridView.count(
-                    crossAxisCount: 3,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                    children: _moods.map((mood) {
-                      final isSelected = moodProv.selectedMood == mood;
-                      return _MoodTile(
-                        mood: mood,
-                        isSelected: isSelected,
-                        onTap: () => moodProv.selectMood(mood),
-                      );
-                    }).toList(),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Submit Button
-                  AppButton(
-                    label: moodProv.isSubmitting ? 'Menyimpan...' : 'Catat',
-                    isLoading: moodProv.isSubmitting,
-                    onPressed: moodProv.selectedMood == null
-                        ? null
-                        : () async {
-                            final ok = await moodProv.submitMood(patientId);
-                            if (!context.mounted) return;
-                            if (ok) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Suasana hati "${moodProv.logs.first.mood.label}" berhasil dicatat! ✨',
-                                  ),
-                                  backgroundColor: AppColors.success,
-                                ),
-                              );
-                              context.pop();
-                            }
-                          },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // History Section
-            if (moodProv.logs.isNotEmpty) ...[
-              SectionHeader(
-                title: 'Riwayat Suasana Hati',
-                subtitle: '${moodProv.logs.length} catatan',
-              ),
-              ...moodProv.logs.take(7).map((log) {
-                return AppCard(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      Text(log.mood.emoji,
-                          style: const TextStyle(fontSize: 28)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(log.mood.label,
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            Text(
-                              '${log.loggedAt.day}/${log.loggedAt.month}/${log.loggedAt.year}',
-                              style: AppTextStyles.bodySmall,
+                      // ── Catat Button ─────────────────────
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: moodProv.selectedMood == null || moodProv.isSubmitting
+                              ? null
+                              : () async {
+                                  final ok = await moodProv.submitMood(patientId);
+                                  if (!context.mounted) return;
+                                  if (ok) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Suasana hati berhasil dicatat! ✨'),
+                                        backgroundColor: Color(0xFF2ECC71),
+                                      ),
+                                    );
+                                    context.pop();
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            disabledBackgroundColor: const Color(0xFF93B4D8),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                          ],
+                            elevation: 0,
+                          ),
+                          child: moodProv.isSubmitting
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : Text(
+                                  'Catat',
+                                  style: AppTextStyles.labelLarge.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
                   ),
-                );
-              }),
-            ],
-            const SizedBox(height: 32),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+// ─────────────────────────────────────────────
+// Header widget (identik dengan home screen)
+// ─────────────────────────────────────────────
+
+class _MoodHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: const Icon(Icons.menu_rounded, size: 28, color: Color(0xFF1A1A2E)),
+          ),
+          const SizedBox(width: 10),
+          // Logo SVG
+          SvgPicture.asset(
+            'assets/svg/logo_primapulih.svg',
+            width: 40,
+            height: 40,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'PrimaPulih',
+            style: AppTextStyles.headingMedium.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'Pasien',
+              style: AppTextStyles.labelSmall.copyWith(
+                color: const Color(0xFF2563EB),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const Spacer(),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: const Color(0xFFD6E8F7),
+            child: const Icon(
+              Icons.person_rounded,
+              color: Color(0xFF7AACCC),
+              size: 24,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Baris 3 mood tiles
+// ─────────────────────────────────────────────
+
+class _MoodRow extends StatelessWidget {
+  const _MoodRow({
+    required this.moods,
+    required this.selected,
+    required this.onSelect,
+  });
+  final List<MoodType> moods;
+  final MoodType? selected;
+  final void Function(MoodType) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: moods.map((m) {
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: _MoodTile(
+              mood: m,
+              isSelected: selected == m,
+              onTap: () => onSelect(m),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Single Mood Tile dengan SVG
+// ─────────────────────────────────────────────
 
 class _MoodTile extends StatelessWidget {
   const _MoodTile({
@@ -193,43 +252,40 @@ class _MoodTile extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
+        width: (MediaQuery.of(context).size.width - 72) / 3,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
+              ? const Color(0xFFDCEEFC)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected
+              ? Border.all(color: const Color(0xFF2563EB), width: 2)
               : null,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // SVG character
             AnimatedScale(
-              scale: isSelected ? 1.2 : 1.0,
+              scale: isSelected ? 1.08 : 1.0,
               duration: const Duration(milliseconds: 200),
-              child: Text(
-                mood.emoji,
-                style: const TextStyle(fontSize: 40),
+              child: SvgPicture.asset(
+                mood.svgPath,
+                width: 80,
+                height: 80,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               mood.label,
-              style: AppTextStyles.labelSmall.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight:
-                    isSelected ? FontWeight.w700 : FontWeight.w400,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected
+                    ? const Color(0xFF2563EB)
+                    : const Color(0xFF444444),
               ),
               textAlign: TextAlign.center,
             ),

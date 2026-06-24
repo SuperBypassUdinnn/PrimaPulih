@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Body / shirt -->
+  <rect x="28" y="112" width="64" height="28" rx="14" fill="#7BBFEA"/>
+  <!-- Neck -->
+  <rect x="50" y="96" width="20" height="18" rx="6" fill="#FBBF7A"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="72" rx="36" ry="38" fill="#FBBF7A"/>
+  <!-- Hair -->
+  <ellipse cx="60" cy="42" rx="36" ry="16" fill="#7D4E2A"/>
+  <ellipse cx="30" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <ellipse cx="90" cy="52" rx="10" ry="12" fill="#7D4E2A"/>
+  <!-- Sweat drops  -->
+  <path d="M22 50 Q20 44 24 46 Q22 50 22 50Z" fill="#6DB8E8"/>
+  <path d="M18 62 Q16 56 20 58 Q18 62 18 62Z" fill="#6DB8E8"/>
+  <!-- Tired eyes (droopy like stress) -->
+  <ellipse cx="46" cy="68" rx="6" ry="5.5" fill="white"/>
+  <ellipse cx="74" cy="68" rx="6" ry="5.5" fill="white"/>
+  <circle cx="46" cy="69" r="3.2" fill="#3A2410"/>
+  <circle cx="74" cy="69" r="3.2" fill="#3A2410"/>
+  <!-- Tired droopy eyelids -->
+  <path d="M40 67 Q46 63 52 67" fill="#FBBF7A" stroke="none"/>
+  <path d="M68 67 Q74 63 80 67" fill="#FBBF7A" stroke="none"/>
+  <!-- Brows down tired -->
+  <path d="M40 61 Q46 63 52 61" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M68 61 Q74 63 80 61" stroke="#7D4E2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Neutral-sad mouth -->
+  <path d="M44 85 Q60 80 76 85" stroke="#B07050" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Cheeks pale -->
+  <ellipse cx="38" cy="76" rx="9" ry="5" fill="#F0C0A0" opacity="0.4"/>
+  <ellipse cx="82" cy="76" rx="9" ry="5" fill="#F0C0A0" opacity="0.4"/>
+</svg>
