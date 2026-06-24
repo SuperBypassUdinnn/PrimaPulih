@@ -31,8 +31,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
       final auth = context.read<AuthProvider>();
       final patientId = auth.currentPatient?.id ?? '';
       if (patientId.isNotEmpty) {
-        context.read<MoodProvider>().loadLogs(patientId);
-        context.read<MedicationProvider>().loadMedications(patientId);
+        context.read<MoodProvider>().loadLogs();
+        context.read<MedicationProvider>().loadMedications();
       }
     });
   }

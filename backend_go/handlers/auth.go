@@ -4,6 +4,7 @@ import (
 	"backend_go/config"
 	"backend_go/models"
 	"context"
+	"log"
 	"os"
 	"time"
 
@@ -40,6 +41,7 @@ func Register(c *fiber.Ctx) error {
 	err = tx.QueryRow(ctx, "INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id",
 		req.Email, string(hashedPassword), req.Role).Scan(&userID)
 	if err != nil {
+		log.Printf("Error inserting user: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create user. Email might exist."})
 	}
 
@@ -53,10 +55,12 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
+		log.Printf("Error inserting profile (role=%s): %v", req.Role, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create profile"})
 	}
 
 	if err := tx.Commit(ctx); err != nil {
+		log.Printf("Error committing tx: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to commit transaction"})
 	}
 

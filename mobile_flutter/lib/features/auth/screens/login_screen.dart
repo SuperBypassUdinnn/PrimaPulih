@@ -278,25 +278,6 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
 
-                          // Demo hint
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF0F5FF),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: const Color(0xFFB8D0F0)),
-                            ),
-                            child: const Text(
-                              '💡 Demo: dhini@email.com (pasien) atau dr.sarah@primapulih.id (dokter) — password bebas',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 11,
-                                color: Color(0xFF2563EB),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

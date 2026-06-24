@@ -8,10 +8,12 @@ import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/auth/screens/register_success_screen.dart';
 import '../../features/home/screens/patient_home_screen.dart';
+import '../../features/home/screens/doctor_home_screen.dart';
 import '../../features/assessment/screens/assessment_screen.dart';
 import '../../features/assessment/screens/assessment_result_screen.dart';
 import '../../features/mood_tracker/screens/mood_tracker_screen.dart';
 import '../../features/medication/screens/medication_screen.dart';
+import '../../features/medication/screens/add_medication_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/consultation/screens/consultation_screen.dart';
 import '../../data/models/models.dart';
@@ -24,10 +26,12 @@ class AppRoutes {
   static const String register          = '/register';
   static const String registerSuccess   = '/register-success';
   static const String patientHome       = '/home';
+  static const String doctorHome        = '/doctor-home';
   static const String assessment        = '/assessment';
   static const String assessmentResult  = '/assessment/result';
   static const String moodTracker       = '/mood-tracker';
   static const String medication        = '/medication';
+  static const String addMedication     = '/add-medication';
   static const String profile           = '/profile';
   static const String consultation      = '/consultation';
 }
@@ -44,7 +48,7 @@ GoRouter createRouter(AuthProvider authProvider) {
 
       if (!isLoggedIn && !isAuthRoute) return AppRoutes.login;
       if (isLoggedIn && state.matchedLocation == AppRoutes.login) {
-        return AppRoutes.patientHome;
+        return authProvider.isPatient ? AppRoutes.patientHome : AppRoutes.doctorHome;
       }
       return null;
     },
@@ -82,6 +86,14 @@ GoRouter createRouter(AuthProvider authProvider) {
         pageBuilder: (context, state) => _buildPage(
           state: state,
           child: const PatientHomeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.doctorHome,
+        name: 'doctorHome',
+        pageBuilder: (context, state) => _buildPage(
+          state: state,
+          child: const DoctorHomeScreen(),
         ),
       ),
 
@@ -125,6 +137,14 @@ GoRouter createRouter(AuthProvider authProvider) {
         pageBuilder: (context, state) => _buildPage(
           state: state,
           child: const MedicationScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.addMedication,
+        name: 'addMedication',
+        pageBuilder: (context, state) => _buildPage(
+          state: state,
+          child: const AddMedicationScreen(),
         ),
       ),
 
