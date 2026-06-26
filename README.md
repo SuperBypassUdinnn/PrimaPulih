@@ -1,83 +1,84 @@
 # PrimaPulih
 
-**Platform Monitoring Pemulihan Pasca-ICU**
+**Telemedicine Rehabilitasi Mental Pasca-ICU**
 
-PrimaPulih adalah aplikasi telemedicine terpadu yang didesain khusus untuk mendampingi penyintas perawatan intensif (ICU) pada masa pemulihan. Aplikasi ini menjembatani komunikasi asinkron antara pasien dan tenaga kesehatan dengan fokus pada pencatatan psikologis mandiri (PHQ-9 & GAD-7) serta rutinitas harian pasien secara sederhana dan efisien.
+## Deskripsi Singkat Aplikasi
+PrimaPulih adalah platform telemedicine terpadu yang dirancang secara khusus untuk mendampingi pasien penyintas perawatan intensif (ICU) pada masa pemulihan mereka di rumah. Aplikasi ini memfasilitasi komunikasi asinkron antara pasien dan tenaga kesehatan dengan berfokus pada evaluasi kesehatan mental (skrining PICS) serta pemantauan rutinitas medis secara praktis dan mudah digunakan.
 
-## Fitur Utama
+## Tujuan Pengembangan Aplikasi
+Tujuan utama aplikasi ini adalah untuk mendeteksi secara dini *Post-Intensive Care Syndrome* (PICS), mengurangi risiko gangguan mental pasca-trauma, serta menjembatani pasien dengan tenaga kesehatan tanpa harus bertatap muka setiap saat. PrimaPulih bertujuan memotivasi pasien dalam memantau kesehatan mental harian dan kedisiplinan minum obat mereka.
 
-* **Autentikasi & Manajemen Akun**: Pemisahan hak akses antara Pasien dan Tenaga Kesehatan (Health Worker).
-* **Asesmen Psikologis Mandiri (P0)**: Pengisian instrumen skrining terstandar PHQ-9 (Depresi) dan GAD-7 (Kecemasan) oleh pasien via aplikasi.
-* **Dashboard Tenaga Kesehatan (P0)**: Tenaga kesehatan dapat melihat daftar pasien, skor asesmen, dan rekam jejak kondisinya.
-* **Mood Tracker Harian (P1)**: Pasien dapat mencatat jurnal afeksi (mood) setiap harinya.
-* **Checklist Obat (P1)**: Pencatatan kepatuhan konsumsi obat pasien secara mandiri.
+## Daftar Fitur yang Tersedia
+* **Autentikasi & Role Management**: Sistem login/register dengan pemisahan peran yang aman antara "Pasien" dan "Tenaga Kesehatan".
+* **Kuesioner Skrining Psikologis (P0)**: Instrumen asesmen terstandar untuk depresi (PHQ-9) dan kecemasan (GAD-7) yang hasilnya terhitung otomatis.
+* **Dashboard Tenaga Kesehatan (P0)**: Pemantauan daftar pasien, riwayat skor asesmen, dan deteksi dini kondisi krisis mental oleh perawat/dokter.
+* **Mood Tracker Harian (P1)**: Pasien dapat mencatat dan melihat riwayat perubahan emosi (*mood*) setiap hari.
+* **Jadwal Kepatuhan Obat (P1)**: Fitur *checklist* harian untuk mencatat tingkat kedisiplinan pasien dalam meminum obat (Pagi, Siang, Malam).
+* **Data Pribadi & Profil**: Layar informasi dan status aktif keanggotaan pengguna.
 
-## Tech Stack
+## Teknologi, Framework, Library, dan Komponen yang Digunakan
+* **Frontend**: Flutter (Mobile App - iOS/Android)
+  * State Management: `provider`
+  * Networking: `http`
+  * Storage: `flutter_secure_storage`
+  * Navigation: `go_router`
+  * Assets: `flutter_svg`
+* **Backend**: Golang (Go)
+  * Framework: `gofiber/v2`
+  * Database Driver: `pgx/v5`
+  * Security: `bcrypt`, JWT
+* **Database**: PostgreSQL 15
+* **Infrastruktur**: Docker, Docker Compose
 
-* **Frontend**: Flutter (Mobile App)
-* **Backend**: Golang (menggunakan Fiber Framework)
-* **Database**: PostgreSQL
-* **Infrastruktur**: Docker & Docker Compose
+## Struktur Database
+Skema database relasional (PostgreSQL) proyek ini berpusat pada relasi tabel utama pengguna:
+1. **users**: Autentikasi dan *Role*.
+2. **patients** & **health_workers**: Profil entitas masing-masing pengguna (mewarisi ID dari `users`).
+3. **assessments**: Penyimpanan riwayat skor skrining (PHQ-9, GAD-7) yang terhubung ke `patients`.
+4. **daily_logs**: Jurnal emosi/mood harian pasien.
+5. **medications** & **medication_logs**: Master resep obat dari tenaga kesehatan dan riwayat log (*checkbox*) harian pasien.
 
-## Cara Menjalankan Proyek (Lokal)
+## Panduan Instalasi dan Menjalankan Aplikasi
 
-Proyek ini telah dikonfigurasi menggunakan Docker Compose, sehingga proses setup sangat mudah dan tidak memerlukan instalasi manual untuk Go maupun PostgreSQL di komputer Anda.
-
-### Prasyarat
-Komputer telah terpasang Docker dan Docker Compose.
-
-### Langkah Instalasi
-
-1. **Buka Terminal di Direktori Proyek**
-   Pastikan Anda berada di root direktori PrimaPulih.
-
-2. **Jalankan Docker Compose**
-   Perintah ini akan mendownload image, menginisialisasi database PostgreSQL (termasuk menjalankan skema tabel awal), dan melakukan build untuk backend Golang secara bersamaan.
+### Menjalankan Backend & Database (Docker)
+Pastikan Anda sudah menginstal **Docker** dan **Docker Compose**.
+1. Buka terminal di *root* folder proyek.
+2. Jalankan perintah berikut untuk menginisiasi server dan database:
    ```bash
-   docker compose up -d --build
+   docker-compose up --build -d
    ```
+3. Backend akan menyala pada port `8080` dan PostgreSQL pada `5435`. Skema database akan terinjeksi secara otomatis saat *container* pertama kali dibangun.
 
-3. **Verifikasi**
-   Setelah kontainer selesai dibangun dan berjalan, backend API sudah aktif dan dapat diakses pada alamat:
-   ```
-   http://localhost:8080
-   ```
-   Database PostgreSQL berjalan pada port 5435.
-
-### (Opsional) Pengembangan Backend Tanpa Docker (Native)
-Jika Anda ingin mengubah kode Golang dan menjalankannya secara native:
-1. Pastikan service database via Docker sudah menyala.
-2. Pindah ke folder backend:
+### Menjalankan Frontend (Flutter)
+1. Buka tab terminal baru dan arahkan ke dalam folder frontend:
    ```bash
-   cd backend_go
+   cd mobile_flutter
    ```
-3. Unduh dependency Go:
+2. Pastikan paket flutter terunduh:
    ```bash
-   go mod tidy
+   flutter pub get
    ```
-4. Jalankan aplikasi:
+3. Jalankan aplikasi di perangkat yang diinginkan (Emulator/Simulator/Desktop):
    ```bash
-   go run main.go
+   flutter run
    ```
 
-## Ringkasan API Endpoints
+---
 
-Semua endpoint berawalan `http://localhost:8080/api/`. Endpoint yang diproteksi memerlukan Header `Authorization: Bearer <token>`.
+## Screenshot Tampilan Aplikasi
 
-### Auth (Publik)
-* `POST /auth/register` : Mendaftarkan pengguna baru (Role: patient atau health_worker).
-* `POST /auth/login` : Autentikasi untuk mendapatkan token JWT.
+| Tampilan Login | Tampilan Register |
+| :---: | :---: |
+| ![Login](assets/Login.png) | ![Register](assets/Register.png) |
 
-### Asesmen (P0)
-* `POST /assessments` : Submit hasil asesmen (Akses: Patient).
-* `GET /assessments` : Melihat riwayat skor asesmen pasien (Akses: Health Worker).
+| Dashboard Nakes | Profil Pasien (Biodata) |
+| :---: | :---: |
+| ![Dashboard](assets/Dasboard.png) | ![Biodata](assets/Biodata.png) |
 
-### Jurnal Harian & Obat (P1)
-* `POST /daily-logs` : Submit jurnal mood hari ini (Akses: Patient).
-* `GET /daily-logs` : Mengambil data riwayat mood.
-* `POST /medications` : Menambahkan master daftar obat.
-* `GET /medications` : Mengambil master daftar obat pasien.
-* `POST /medication-logs` : Mencentang obat yang telah diminum pada hari tersebut (Akses: Patient).
+| Kuesioner (Asesmen) | Mood Tracker Harian |
+| :---: | :---: |
+| ![Kuesioner](assets/Kuesioner.png) | ![Mood Tracker](assets/MoodTracker.png) |
 
-## Catatan Tambahan
-Struktur skema database proyek ini berada di direktori `database/0001_initial_schema.sql` dan secara otomatis dieksekusi oleh PostgreSQL saat kontainer pertama kali dijalankan.
+| Jadwal Konsumsi Obat | Tampilan Meeting / Konsultasi |
+| :---: | :---: |
+| ![Jadwal Konsumsi](assets/JadwalKonsumsi.png) | ![Meeting](assets/Meeting.png) |
